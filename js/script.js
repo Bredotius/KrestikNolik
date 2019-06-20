@@ -27,23 +27,15 @@ function clearFeild(){
     excel[i].classList.remove('used');
     excel[i].classList.remove('nolik');
     excel[i].classList.remove('krestik');
+    hod = 1;
+    click = 0;
+    step = true;
   }
 }
 
-let hod = 1;
+let step = true;
 
-field.addEventListener('click', function(e){
-  let target = e.target;
-  if(!target.classList.contains('used')){
-    if(hod == 1){
-      target.classList.add('krestik');
-      hod = 2;
-    } else if(hod == 2){
-      target.classList.add('nolik');
-      hod = 1;
-    }
-    target.classList.add('used');
-  }
+function winCheck(){
   if (excel[0].classList.contains('nolik') && excel[1].classList.contains('nolik') && excel[2].classList.contains('nolik')
   || excel[3].classList.contains('nolik') && excel[4].classList.contains('nolik') && excel[5].classList.contains('nolik')
   || excel[6].classList.contains('nolik') && excel[7].classList.contains('nolik') && excel[8].classList.contains('nolik')
@@ -57,8 +49,7 @@ field.addEventListener('click', function(e){
   {
     alert("Нолики выиграли");
     clearFeild();
-  }
-  if (excel[0].classList.contains('krestik') && excel[1].classList.contains('krestik') && excel[2].classList.contains('krestik')
+  } else if (excel[0].classList.contains('krestik') && excel[1].classList.contains('krestik') && excel[2].classList.contains('krestik')
   || excel[3].classList.contains('krestik') && excel[4].classList.contains('krestik') && excel[5].classList.contains('krestik')
   || excel[6].classList.contains('krestik') && excel[7].classList.contains('krestik') && excel[8].classList.contains('krestik')
 
@@ -70,6 +61,58 @@ field.addEventListener('click', function(e){
   || excel[2].classList.contains('krestik') && excel[4].classList.contains('krestik') && excel[6].classList.contains('krestik'))
   {
     alert("Крестики выиграли");
+    clearFeild();
+  } else if(click >= 9){
+    alert("Ничья");
+    clearFeild();
+  }
+}
+
+function createNolik(){
+  function generateNolik(){
+    let posX = Math.round(Math.random()* (2) + 1);
+    let posY = Math.round(Math.random()* (2) + 1);
+    return [posX,posY];
+  }
+
+  hod = 1;
+  click++;
+  if(click >= 9){
+    winCheck();
+  }
+
+  let nolikCoordinates = generateNolik();
+  nolik = document.querySelector(`[posX = "${nolikCoordinates[0]}"][posY = "${nolikCoordinates[1]}"]`);
+  
+  while(nolik.classList.contains('used')){
+    let nolikCoordinates = generateNolik();
+    nolik = document.querySelector(`[posX = "${nolikCoordinates[0]}"][posY = "${nolikCoordinates[1]}"]`);
+  }
+  nolik.classList.add('nolik');
+  nolik.classList.add('used');
+  step = true;
+}
+
+let interval = setInterval(function(){
+  winCheck();
+  if(hod == 2){
+    createNolik();
+  }
+}, 500)
+
+let hod = 1;
+let click = 0;
+
+field.addEventListener('click', function(e){
+  let target = e.target;
+  if(!target.classList.contains('used') && hod == 1 && step){
+    click++;
+    target.classList.add('krestik');
+    hod = 2;
+    target.classList.add('used');
+    ster = false;
+  } else if(click == 9){
+    alert("Ничья");
     clearFeild();
   }
 })
